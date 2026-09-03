@@ -1,0 +1,50 @@
+databases:
+  - name: employee-portal-db
+    databaseName: employee_portal
+    user: postgres
+    plan: free
+
+services:
+  - type: web
+    name: custom-employee-portal
+    env: node
+    plan: free
+    buildCommand: cd frontend && npm install && npm run build && cd ../backend && npm install
+    startCommand: node backend/src/config/seed.js && node backend/server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        fromDatabase:
+          name: employee-portal-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 8h
+      - key: SESSION_IDLE_TIMEOUT_MINUTES
+        value: "30"
+      - key: ZOHO_ACCOUNTS_BASE_URL
+        value: https://accounts.zoho.in
+      - key: ZOHO_API_DOMAIN
+        value: https://www.zohoapis.in
+      - key: ZOHO_CLIENT_ID
+        sync: false
+      - key: ZOHO_CLIENT_SECRET
+        sync: false
+      - key: ZOHO_REFRESH_TOKEN
+        sync: false
+      - key: ZOHO_PEOPLE_URL
+        value: https://people.zoho.in
+      - key: ZOHO_CRM_URL
+        value: https://crm.zoho.in
+      - key: ZOHO_DESK_URL
+        value: https://desk.zoho.in
+      - key: ZOHO_BOOKS_URL
+        value: https://books.zoho.in
+      - key: SEED_ADMIN_EMAIL
+        value: admin@brainwave.io
+      - key: SEED_ADMIN_PASSWORD
+        value: ChangeMe123!
