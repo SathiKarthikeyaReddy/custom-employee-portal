@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-ink: #12151C;
+  --color-paper: #F3F4F1;
+  --color-forest: #2F6F4F;
+  --color-amber: #C98A2C;
+  --color-ink-text: #1B1E27;
+  --color-border: #DEDDD6;
+
+  --role-admin: #1B1E27;
+  --role-hr: #3B5BA9;
+  --role-sales: #C98A2C;
+  --role-support: #2F8F8F;
+  --role-finance: #2F6F4F;
+  --role-manager: #6B5B95;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  background-color: var(--color-paper);
+  color: var(--color-ink-text);
+  font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* One deliberate transition only: login success checkmark draw-in */
+@keyframes checkmark-draw {
+  0% {
+    stroke-dashoffset: 48;
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+.animate-checkmark {
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: checkmark-draw 0.45s ease-out forwards;
+}

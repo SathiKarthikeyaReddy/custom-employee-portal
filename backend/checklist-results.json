@@ -1,0 +1,380 @@
+[
+  {
+    "num": "1.1",
+    "scenario": "Login with wrong password",
+    "expected": "401, generic \"Invalid credentials\", LOGIN_FAILED audit row",
+    "actual": "401 \"Invalid credentials\", audit: true",
+    "status": "PASS"
+  },
+  {
+    "num": "1.2",
+    "scenario": "Login with non-existent email",
+    "expected": "401 Invalid credentials (must not reveal non-existence)",
+    "actual": "401 \"Invalid credentials\"",
+    "status": "PASS"
+  },
+  {
+    "num": "1.3",
+    "scenario": "Login with empty email/password",
+    "expected": "400 Bad Request before hitting DB",
+    "actual": "400",
+    "status": "PASS"
+  },
+  {
+    "num": "1.4",
+    "scenario": "Login with malformed email",
+    "expected": "400 Bad Request",
+    "actual": "400",
+    "status": "PASS"
+  },
+  {
+    "num": "1.5",
+    "scenario": "Login as user with is_active = false",
+    "expected": "401 Invalid credentials (generic, not \"account disabled\")",
+    "actual": "401 \"Invalid credentials\"",
+    "status": "PASS"
+  },
+  {
+    "num": "1.6",
+    "scenario": "Protected route with no Authorization header",
+    "expected": "401 Unauthorized",
+    "actual": "401 \"Unauthorized\"",
+    "status": "PASS"
+  },
+  {
+    "num": "1.7",
+    "scenario": "Protected route with missing Bearer prefix",
+    "expected": "401 Unauthorized",
+    "actual": "401",
+    "status": "PASS"
+  },
+  {
+    "num": "1.8",
+    "scenario": "Protected route with syntactically invalid JWT",
+    "expected": "401 Invalid or expired token (not 500)",
+    "actual": "401",
+    "status": "PASS"
+  },
+  {
+    "num": "1.9",
+    "scenario": "Protected route with expired JWT",
+    "expected": "401 Invalid or expired token",
+    "actual": "401",
+    "status": "PASS"
+  },
+  {
+    "num": "1.10",
+    "scenario": "GET /api/auth/me reflects fresh DB permissions without re-login",
+    "expected": "Returns updated permissions from DB",
+    "actual": "Has zoho.crm.access: true",
+    "status": "PASS"
+  },
+  {
+    "num": "1.15",
+    "scenario": "Create user with password < 8 chars",
+    "expected": "400 Bad Request",
+    "actual": "400",
+    "status": "PASS"
+  },
+  {
+    "num": "2.1",
+    "scenario": "POST /api/zoho/:appKey/open for unauthorized apps",
+    "expected": "403 + ACCESS_DENIED audit row",
+    "actual": "All 403: true, ACCESS_DENIED rows: true",
+    "status": "PASS"
+  },
+  {
+    "num": "2.2",
+    "scenario": "HR user calls admin.* routes (/users, /roles, /permissions, /audit)",
+    "expected": "403 for all",
+    "actual": "All 403: true",
+    "status": "PASS"
+  },
+  {
+    "num": "2.3",
+    "scenario": "User with zero roles logs in",
+    "expected": "Dashboard loads with 4 locked apps, no crash",
+    "actual": "Authorized: 0, Locked: 4",
+    "status": "PASS"
+  },
+  {
+    "num": "2.4",
+    "scenario": "Open non-existent app",
+    "expected": "404 Not Found (not 500)",
+    "actual": "404",
+    "status": "PASS"
+  },
+  {
+    "num": "2.5",
+    "scenario": "Assign user two roles (HR + Sales)",
+    "expected": "Dashboard shows both People and CRM authorized",
+    "actual": "Authorized keys: [people, crm]",
+    "status": "PASS"
+  },
+  {
+    "num": "2.6",
+    "scenario": "Remove all roles from existing user",
+    "expected": "Reverts to fully locked",
+    "actual": "Authorized count: 0",
+    "status": "PASS"
+  },
+  {
+    "num": "2.7",
+    "scenario": "Deactivate currently logged-in user with valid JWT",
+    "expected": "401 Inactive user on next request",
+    "actual": "401",
+    "status": "PASS"
+  },
+  {
+    "num": "2.8",
+    "scenario": "PATCH nonexistent user ID 999999",
+    "expected": "404 Not Found (not 500)",
+    "actual": "404",
+    "status": "PASS"
+  },
+  {
+    "num": "2.9",
+    "scenario": "Assign non-existent permission ID",
+    "expected": "400 Bad Request (no leaking FK error)",
+    "actual": "400",
+    "status": "PASS"
+  },
+  {
+    "num": "2.10",
+    "scenario": "SQL injection in login email",
+    "expected": "400/401 handled cleanly, no bypass, no 500",
+    "actual": "400",
+    "status": "PASS"
+  },
+  {
+    "num": "3.1",
+    "scenario": "Support calls /api/zoho/desk/open",
+    "expected": "409 \"This Zoho application is not yet provisioned\"",
+    "actual": "409 \"This Zoho application is not yet provisioned\"",
+    "status": "PASS"
+  },
+  {
+    "num": "3.2",
+    "scenario": "Unauthorized role calls /proxy",
+    "expected": "403 Access Denied",
+    "actual": "403",
+    "status": "PASS"
+  },
+  {
+    "num": "3.4",
+    "scenario": "Zoho call with invalid secret",
+    "expected": "502 \"Zoho token refresh failed\" (no credentials leaked)",
+    "actual": "502 \"Zoho token refresh failed\"",
+    "status": "PASS"
+  },
+  {
+    "num": "3.5",
+    "scenario": "5 concurrent token requests with mutex",
+    "expected": "All requests handled synchronously via mutex without race conditions",
+    "actual": "Processed 5 requests",
+    "status": "PASS"
+  },
+  {
+    "num": "3.6",
+    "scenario": "GET /api/zoho/CRM/open (wrong method/case)",
+    "expected": "404 Not Found (intentional REST routing)",
+    "actual": "404",
+    "status": "PASS"
+  },
+  {
+    "num": "4.1",
+    "scenario": "Create user with duplicate email",
+    "expected": "409 Conflict (not 500)",
+    "actual": "409",
+    "status": "PASS"
+  },
+  {
+    "num": "4.2",
+    "scenario": "Create user with missing fields",
+    "expected": "400 Bad Request",
+    "actual": "400",
+    "status": "PASS"
+  },
+  {
+    "num": "4.3",
+    "scenario": "Update user email to existing email",
+    "expected": "409 Conflict",
+    "actual": "409",
+    "status": "PASS"
+  },
+  {
+    "num": "4.4",
+    "scenario": "Create role with existing name",
+    "expected": "409 Conflict",
+    "actual": "409",
+    "status": "PASS"
+  },
+  {
+    "num": "4.5",
+    "scenario": "Create role with empty name",
+    "expected": "400 Bad Request",
+    "actual": "400",
+    "status": "PASS"
+  },
+  {
+    "num": "4.6",
+    "scenario": "Assign empty permissions array to role",
+    "expected": "200 OK, 0 permissions",
+    "actual": "200, perms: 0",
+    "status": "PASS"
+  },
+  {
+    "num": "4.7",
+    "scenario": "Delete only remaining Admin user",
+    "expected": "Blocked with 400/409",
+    "actual": "400",
+    "status": "PASS"
+  },
+  {
+    "num": "4.8",
+    "scenario": "Admin self-demotes leaving 0 admins",
+    "expected": "409 \"At least one Admin must remain\"",
+    "actual": "409 \"At least one Admin must remain\"",
+    "status": "PASS"
+  },
+  {
+    "num": "4.10",
+    "scenario": "Reset password with 1-char password",
+    "expected": "400 Bad Request",
+    "actual": "400",
+    "status": "PASS"
+  },
+  {
+    "num": "5.1",
+    "scenario": "Audit query with offset beyond total count",
+    "expected": "200 OK with empty array",
+    "actual": "200, logs: 0",
+    "status": "PASS"
+  },
+  {
+    "num": "5.2",
+    "scenario": "Audit filter by non-existent action",
+    "expected": "200 OK with empty array",
+    "actual": "200, logs: 0",
+    "status": "PASS"
+  },
+  {
+    "num": "5.3",
+    "scenario": "Audit filter by non-existent userEmail",
+    "expected": "200 OK with empty array",
+    "actual": "200, logs: 0",
+    "status": "PASS"
+  },
+  {
+    "num": "5.4",
+    "scenario": "Audit pagination limit/offset check",
+    "expected": "Page 1 & 2 return distinct sliced logs",
+    "actual": "Page 1: 5, Page 2: 5",
+    "status": "PASS"
+  },
+  {
+    "num": "5.5",
+    "scenario": "Delete user preserves email and sets user_id to NULL",
+    "expected": "user_email preserved, user_id NULL on prior events",
+    "actual": "Preserved rows: 3, null-id rows: 3",
+    "status": "PASS"
+  },
+  {
+    "num": "7.1",
+    "scenario": "Request with unrelated Origin header",
+    "expected": "CORS origin check restricts to http://localhost:5173",
+    "actual": "Access-Control-Allow-Origin: http://localhost:5173",
+    "status": "PASS"
+  },
+  {
+    "num": "7.2",
+    "scenario": "Helmet security headers present",
+    "expected": "X-Content-Type-Options: nosniff present",
+    "actual": "X-Content-Type-Options: nosniff",
+    "status": "PASS"
+  },
+  {
+    "num": "7.3",
+    "scenario": "Malformed JSON body",
+    "expected": "400 Bad Request with no stack trace",
+    "actual": "400, has stack: false",
+    "status": "PASS"
+  },
+  {
+    "num": "7.4",
+    "scenario": "JWT_SECRET is long random string",
+    "expected": "Random string >= 32 chars, no placeholder",
+    "actual": "Length: 67",
+    "status": "PASS"
+  },
+  {
+    "num": "8.1",
+    "scenario": "Run seed script a second time",
+    "expected": "No duplicate rows, admin password hash unchanged",
+    "actual": "Roles: 6, Perms: 8, Apps: 4",
+    "status": "PASS"
+  },
+  {
+    "num": "8.2",
+    "scenario": "Check zoho_apps.base_url for People, CRM, Books",
+    "expected": "Matches .env URLs exactly",
+    "actual": "People: true, CRM: true, Books: true",
+    "status": "PASS"
+  },
+  {
+    "num": "8.3",
+    "scenario": "Check zoho_apps row for Desk",
+    "expected": "is_provisioned = false",
+    "actual": "is_provisioned: false",
+    "status": "PASS"
+  },
+  {
+    "num": "1.12",
+    "scenario": "Logout removes token from localStorage",
+    "expected": "Token removed from localStorage",
+    "actual": "Before: true, After: null",
+    "status": "PASS"
+  },
+  {
+    "num": "1.11",
+    "scenario": "Login page displays explanation on ?reason=session_expired",
+    "expected": "Shows clear expiration message",
+    "actual": "Your session has expired due to inactivity. Please sign in again.",
+    "status": "PASS"
+  },
+  {
+    "num": "1.13",
+    "scenario": "Refresh page while logged in persists session",
+    "expected": "Remains on /dashboard",
+    "actual": "/dashboard",
+    "status": "PASS"
+  },
+  {
+    "num": "1.14",
+    "scenario": "Fresh context/incognito without token redirects to /login",
+    "expected": "Redirects to /login",
+    "actual": "/login",
+    "status": "PASS"
+  },
+  {
+    "num": "6.1",
+    "scenario": "Non-admin visits /admin/users URL",
+    "expected": "Inline Access Denied card, no table flash",
+    "actual": "ACCESS DENIED: INSUFFICIENT PERMISSIONS",
+    "status": "PASS"
+  },
+  {
+    "num": "6.3",
+    "scenario": "Mobile viewport 375px responsiveness",
+    "expected": "Fully usable, no horizontal overflow scroll",
+    "actual": "Horizontal scroll: false",
+    "status": "PASS"
+  },
+  {
+    "num": "6.5",
+    "scenario": "Modal closes when Escape key is pressed",
+    "expected": "Modal dismissed",
+    "actual": "Modal closed: true",
+    "status": "PASS"
+  }
+]
