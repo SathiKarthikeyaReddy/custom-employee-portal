@@ -8,6 +8,9 @@ const initDb = require('./src/config/initDb');
 const routes = require('./src/routes');
 const errorHandler = require('./src/middlewares/errorHandler');
 
+const path = require('path');
+const fs = require('fs');
+
 const app = express();
 const PORT = process.env.PORT || 4000;
 
@@ -22,13 +25,12 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-// Security headers
-app.use(helmet());
+// Security headers (disable strict CSP to allow Vite bundled assets)
+app.use(helmet({ contentSecurityPolicy: false }));
 
-// CORS configuration
-const allowedOrigin = process.env.FRONTEND_ORIGIN || 'http://localhost:5173';
+// CORS configuration (support both local dev and public tunnel domains)
 app.use(cors({
-  origin: allowedOrigin,
+  origin: (origin, callback) => callback(null, true),
   credentials: true,
 }));
 
@@ -52,6 +54,18 @@ app.use('/api', routes);
 app.use('/api/*', (req, res) => {
   res.status(404).json({ message: `API route ${req.method} ${req.originalUrl} not found` });
 });
+
+// Serve frontend SPA bundle if built
+const frontendDist = path.resolve(__dirname, '../frontend/dist');
+if (fs.existsSync(frontendDist)) {
+  app.use(express.static(frontendDist));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/health')) {
+      return next();
+    }
+    res.sendFile(path.join(frontendDist, 'index.html'));
+  });
+}
 
 // Global error handler (must be registered last)
 app.use(errorHandler);
