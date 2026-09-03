@@ -1,7 +1,6 @@
 databases:
   - name: employee-portal-db
     databaseName: employee_portal
-    user: postgres
     plan: free
 
 services:
@@ -10,7 +9,7 @@ services:
     env: node
     plan: free
     buildCommand: cd frontend && npm install && npm run build && cd ../backend && npm install
-    startCommand: node backend/src/config/seed.js && node backend/server.js
+    startCommand: cd backend && node src/config/seed.js && node server.js
     envVars:
       - key: NODE_ENV
         value: production
